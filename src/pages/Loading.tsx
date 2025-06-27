@@ -1,12 +1,11 @@
-import React from "react";
 import { useLocation } from "react-router-dom";
 
 const Loading = () => {
   const location = useLocation();
   const userName = location.state?.userName || "User Name";
   return (
-    <div className="h-screen w-screen flex items-center justify-center bg-black">
-      <h1 className="text-white text-4xl ">Hello, {userName}</h1>
+    <div className="flex items-center justify-center w-screen h-screen bg-black">
+      <h1 className="text-4xl text-white ">Hello, {userName}</h1>
     </div>
   );
 };

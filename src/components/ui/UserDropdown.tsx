@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { FiSettings, FiRefreshCw, FiLogOut } from "react-icons/fi";
-import SettingsModal from "../components/SettingsModal/SettingsModal";
+import SettingsModal from "../SettingsModal/SettingsModal";
 import { useNavigate } from "react-router-dom";
 
 interface UserDropdownProps {

@@ -46,7 +46,7 @@ const Signup = () => {
       {/* Left side - Signup Form */}
       <div className="flex flex-col items-center justify-between w-1/2 h-screen px-10 py-8">
         <div className="flex flex-col justify-center flex-grow w-full max-w-md gap-8">
-          <h1 className="mb-2 text-5xl font-semibold text-center">
+          <h1 className="mb-2 text-5xl font-normal text-center">
             Create Account
           </h1>
           <p className="mb-3 text-sm text-center text-gray-600">

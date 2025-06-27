@@ -1,6 +1,6 @@
 import { useRef, useEffect, useState } from "react";
 import type { RefObject } from "react";
-import SearchModal from "./SearchModal";
+import SearchModal from "../ui/SearchModal";
 
 const Navbar = () => {
   const [modalOpen, setModalOpen] = useState(false);
@@ -9,6 +9,8 @@ const Navbar = () => {
   const modalInputRef = useRef<HTMLInputElement>(
     null
   ) as RefObject<HTMLInputElement>;
+  const [currentTime, setCurrentTime] = useState("");
+  const [currentDate, setCurrentDate] = useState("");
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -37,10 +39,53 @@ const Navbar = () => {
     setShortcutLabel(isMac ? "⌘ + /" : "Ctrl + /");
   }, []);
 
+  useEffect(() => {
+    const updateTime = () => {
+      const now = new Date();
+      const pad = (n: number) => n.toString().padStart(2, "0");
+      const hours = pad(now.getHours());
+      const minutes = pad(now.getMinutes());
+      const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+      const months = [
+        "Jan",
+        "Feb",
+        "Mar",
+        "Apr",
+        "May",
+        "Jun",
+        "Jul",
+        "Aug",
+        "Sep",
+        "Oct",
+        "Nov",
+        "Dec",
+      ];
+      const day = days[now.getDay()];
+      const date = pad(now.getDate());
+      const month = months[now.getMonth()];
+      setCurrentTime(`${hours}:${minutes}`);
+      setCurrentDate(`${day} ${date} ${month}`); // Removed dash
+    };
+    updateTime();
+    const interval = setInterval(updateTime, 60000);
+    return () => clearInterval(interval);
+  }, []);
+
   return (
     <>
       <nav className="w-full px-8 py-4 ">
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between gap-6">
+          {/* Left: Time, Day, and Date */}
+          <div className="flex items-center min-w-[150px]">
+            <div className="flex items-center gap-2 text-base font-medium leading-none text-black">
+              <span>{currentTime}</span>
+              <span>{currentDate.split(" ")[0]}</span>
+              <span>
+                {currentDate.split(" ")[1]} {currentDate.split(" ")[2]}
+              </span>
+            </div>
+          </div>
+
           {/* Center: Search Bar */}
           <div className="flex justify-center flex-1">
             <div className="relative w-full max-w-xl">
@@ -70,6 +115,15 @@ const Navbar = () => {
                 </span>
               </span>
             </div>
+          </div>
+
+          {/* Right: Avatar */}
+          <div className="flex items-center justify-end min-w-[48px]">
+            <img
+              src="/icon.svg"
+              alt="User Avatar"
+              className="object-cover w-12 h-12 bg-white border border-gray-200 rounded-full shadow-sm"
+            />
           </div>
         </div>
       </nav>
