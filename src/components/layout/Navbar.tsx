@@ -1,6 +1,7 @@
 import { useRef, useEffect, useState } from "react";
 import type { RefObject } from "react";
 import SearchModal from "../ui/SearchModal";
+import { useLocation } from "react-router-dom";
 
 const Navbar = () => {
   const [modalOpen, setModalOpen] = useState(false);
@@ -11,6 +12,7 @@ const Navbar = () => {
   ) as RefObject<HTMLInputElement>;
   const [currentTime, setCurrentTime] = useState("");
   const [currentDate, setCurrentDate] = useState("");
+  const location = useLocation();
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -71,20 +73,27 @@ const Navbar = () => {
     return () => clearInterval(interval);
   }, []);
 
+  // Only show date/time on pages other than calendar, notes, and tasks
+  const hideDateTime = ["/calendar", "/notes", "/tasks"].some((path) =>
+    location.pathname.startsWith(path)
+  );
+
   return (
     <>
       <nav className="w-full px-8 py-4 ">
         <div className="flex items-center justify-between gap-6">
           {/* Left: Time, Day, and Date */}
-          <div className="flex items-center min-w-[150px]">
-            <div className="flex items-center gap-2 text-base font-medium leading-none text-black">
-              <span>{currentTime}</span>
-              <span>{currentDate.split(" ")[0]}</span>
-              <span>
-                {currentDate.split(" ")[1]} {currentDate.split(" ")[2]}
-              </span>
+          {!hideDateTime && (
+            <div className="flex items-center min-w-[150px]">
+              <div className="flex items-center gap-2 text-base font-medium leading-none text-black">
+                <span>{currentTime}</span>
+                <span>{currentDate.split(" ")[0]}</span>
+                <span>
+                  {currentDate.split(" ")[1]} {currentDate.split(" ")[2]}
+                </span>
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Center: Search Bar */}
           <div className="flex justify-center flex-1">

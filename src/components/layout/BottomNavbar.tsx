@@ -8,7 +8,7 @@ const BottomNavbar = () => {
   const navItems = [
     {
       id: "overview",
-      label: "Overview",
+      label: "Snapshot",
       path: "/",
       icon: <FiGrid size={18} />,
     },

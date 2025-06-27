@@ -5,107 +5,137 @@ const notes = [
   {
     id: 1,
     title: "Meeting Notes",
-    content: "Discuss project milestones and deliverables.",
-    color: "bg-yellow-200",
+    description:
+      "Discuss project milestones and deliverables for Q2. Review team progress and identify key blockers that need immediate attention.",
+    createdAt: "2025-06-25",
   },
   {
     id: 2,
     title: "Shopping List",
-    content: "Milk, Bread, Eggs, Coffee, Fruits.",
-    color: "bg-pink-200",
+    description:
+      "Weekly grocery shopping essentials including organic milk, whole grain bread, free-range eggs, premium coffee beans, and seasonal fruits.",
+    createdAt: "2025-06-24",
   },
   {
     id: 3,
-    title: "Ideas",
-    content: "Explore new UI concepts for dashboard.",
-    color: "bg-blue-200",
+    title: "UI Design Ideas",
+    description:
+      "Explore new UI concepts for dashboard redesign. Focus on minimalist approach with glassmorphism effects and micro-interactions.",
+    createdAt: "2025-06-23",
   },
   {
     id: 4,
     title: "Workout Plan",
-    content: "Monday: Chest, Tuesday: Back, Wednesday: Legs.",
-    color: "bg-green-200",
+    description:
+      "Complete weekly workout schedule: Monday - Chest & Triceps, Tuesday - Back & Biceps, Wednesday - Legs & Core, Thursday - Shoulders.",
+    createdAt: "2025-06-22",
   },
   {
     id: 5,
     title: "Books to Read",
-    content: "Atomic Habits, Deep Work, The Pragmatic Programmer.",
-    color: "bg-purple-200",
+    description:
+      "Personal development reading list: Atomic Habits by James Clear, Deep Work by Cal Newport, The Pragmatic Programmer by Andy Hunt.",
+    createdAt: "2025-06-21",
   },
   {
     id: 6,
     title: "Travel Plans",
-    content: "Visit Japan in spring for cherry blossoms.",
-    color: "bg-orange-200",
+    description:
+      "Spring vacation to Japan for cherry blossom season. Plan itinerary for Tokyo, Kyoto, and Osaka with cultural experiences.",
+    createdAt: "2025-06-20",
+  },
+  {
+    id: 7,
+    title: "Project Research",
+    description:
+      "Research latest web development trends, AI integration possibilities, and performance optimization techniques for modern applications.",
+    createdAt: "2025-06-19",
+  },
+  {
+    id: 8,
+    title: "Recipe Collection",
+    description:
+      "Healthy meal prep recipes for the week. Focus on high-protein, low-carb options with fresh vegetables and lean proteins.",
+    createdAt: "2025-06-18",
   },
 ];
 
 interface NoteGridProps {
   columns?: number;
+  view?: "grid" | "card";
 }
 
-const NoteGrid: React.FC<NoteGridProps> = () => {
+const NoteGrid: React.FC<NoteGridProps> = ({ view = "grid" }) => {
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    });
+  };
+
+  const gridClasses =
+    view === "grid"
+      ? "grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+      : "flex flex-col gap-4";
+
+  const cardClasses =
+    view === "grid"
+      ? "group relative bg-white/60 backdrop-blur-sm border border-white/40 rounded-2xl p-6 cursor-pointer transition-all duration-300 hover:scale-[1.02] hover:shadow-xl hover:shadow-gray-200/50 hover:bg-white/80"
+      : "group relative bg-white/60 backdrop-blur-sm border border-white/40 rounded-xl p-4 cursor-pointer transition-all duration-300 hover:shadow-lg hover:shadow-gray-200/50 hover:bg-white/80 flex items-center gap-4";
+
   return (
-    <div className="p-6 pt-20">
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-        {notes.map((note) => (
-          <div
-            key={note.id}
-            className={`${note.color} p-5 relative cursor-pointer transition-all duration-300 hover:scale-[1.02] hover:shadow-lg border border-white/50 backdrop-blur-sm`}
-            style={{
-              borderRadius: "16px",
-              minHeight: "180px",
-              boxShadow: "0 4px 20px rgba(0, 0, 0, 0.08)",
-            }}
-          >
-            {/* Top border accent */}
-            <div className="absolute top-0 h-1 rounded-b-full left-4 right-4 bg-black/10"></div>
+    <div className={gridClasses}>
+      {notes.map((note) => (
+        <div
+          key={note.id}
+          className={cardClasses}
+          style={{
+            boxShadow: "0 8px 32px rgba(0, 0, 0, 0.06)",
+          }}
+        >
+          {/* Subtle gradient overlay */}
+          <div className="absolute inset-0 pointer-events-none bg-gradient-to-br from-white/20 to-transparent rounded-2xl"></div>
 
-            {/* Remove Button */}
-            <button
-              className="absolute flex items-center justify-center text-gray-500 transition-all rounded-full shadow-md w-7 h-7 bg-white/80 backdrop-blur-sm top-3 right-3 hover:bg-red-50 hover:text-red-500 hover:scale-110"
-              onClick={(e) => {
-                e.stopPropagation();
-                // Handle remove logic here
-              }}
+          {/* Content */}
+          <div className="relative z-10 flex-1">
+            {/* Title */}
+            <h3
+              className={`text-lg font-semibold text-gray-900 group-hover:text-gray-800 transition-colors ${
+                view === "grid" ? "mb-3 line-clamp-2" : "mb-2 line-clamp-1"
+              }`}
             >
-              <svg
-                width="14"
-                height="14"
-                fill="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" />
-              </svg>
-            </button>
+              {note.title}
+            </h3>
 
-            {/* Note Content */}
-            <div className="pt-2 pb-3">
-              <h3 className="mb-3 text-lg font-semibold leading-tight text-gray-800">
-                {note.title}
-              </h3>
-            </div>
-            <p className="text-sm leading-relaxed text-gray-600 line-clamp-4">
-              {note.content}
+            {/* Description */}
+            <p
+              className={`text-sm text-gray-600 leading-relaxed group-hover:text-gray-700 transition-colors ${
+                view === "grid" ? "mb-4 line-clamp-3" : "mb-3 line-clamp-2"
+              }`}
+            >
+              {note.description}
             </p>
 
-            {/* Bottom decorative line */}
-            <div className="absolute h-px bottom-4 left-5 right-5 bg-black/10"></div>
+            {/* Divider */}
+            <div className="w-full h-px mb-4 bg-gradient-to-r from-transparent via-gray-200 to-transparent"></div>
 
-            {/* Pin Icon */}
-            <div className="absolute text-gray-400 top-3 left-4">
-              <svg
-                width="14"
-                height="14"
-                fill="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path d="M16,12V4H17V2H7V4H8V12L6,14V16H11.2V22H12.8V16H18V14L16,12Z" />
-              </svg>
+            {/* Date */}
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-medium tracking-wide text-gray-500">
+                {formatDate(note.createdAt)}
+              </span>
+
+              {/* Action indicator */}
+              <div className="w-2 h-2 transition-colors duration-300 bg-gray-300 rounded-full group-hover:bg-blue-400"></div>
             </div>
           </div>
-        ))}
-      </div>
+
+          {/* Hover effect border */}
+          <div className="absolute inset-0 transition-all duration-300 border border-transparent pointer-events-none rounded-2xl group-hover:border-gray-200/50"></div>
+        </div>
+      ))}
     </div>
   );
 };

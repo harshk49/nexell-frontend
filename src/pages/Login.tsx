@@ -108,7 +108,7 @@ const LoginPage = () => {
                           type={showPassword ? "text" : "password"}
                           placeholder="Password"
                           {...field}
-                          className="w-full px-4 py-3 pr-12 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-black placeholder:tracking-wider"
+                          className="w-full px-6 py-4 pr-12 text-lg border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-black placeholder:tracking-wider"
                         />
                       </FormControl>
                       <span

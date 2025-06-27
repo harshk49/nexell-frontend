@@ -35,7 +35,7 @@ const Home = () => {
 
           {/* Notes Overview Column */}
           <div className="w-full">
-            <NotesOverview />
+            <NotesOverview view="grid" />
           </div>
         </div>
       </div>

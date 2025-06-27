@@ -8,10 +8,11 @@ interface Task {
   completed: boolean;
   priority: "low" | "medium" | "high";
   dueDate: string;
+  status: "todo" | "inprogress" | "inreview" | "done";
 }
 
 const Tasks = () => {
-  const [tasks, setTasks] = useState<Task[]>([
+  const [tasks] = useState<Task[]>([
     {
       id: 1,
       title: "Review project proposal",
@@ -19,6 +20,7 @@ const Tasks = () => {
       completed: false,
       priority: "high",
       dueDate: "2025-06-27",
+      status: "todo",
     },
     {
       id: 2,
@@ -27,6 +29,7 @@ const Tasks = () => {
       completed: false,
       priority: "medium",
       dueDate: "2025-06-28",
+      status: "inprogress",
     },
     {
       id: 3,
@@ -35,6 +38,7 @@ const Tasks = () => {
       completed: true,
       priority: "low",
       dueDate: "2025-06-25",
+      status: "done",
     },
     {
       id: 4,
@@ -43,18 +47,9 @@ const Tasks = () => {
       completed: false,
       priority: "medium",
       dueDate: "2025-06-29",
+      status: "inreview",
     },
   ]);
-
-  const [filter, setFilter] = useState<"all" | "active" | "completed">("all");
-
-  const toggleTask = (id: number) => {
-    setTasks(
-      tasks.map((task) =>
-        task.id === id ? { ...task, completed: !task.completed } : task
-      )
-    );
-  };
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
@@ -68,12 +63,6 @@ const Tasks = () => {
         return "bg-gray-100 text-gray-800 border-gray-200";
     }
   };
-
-  const filteredTasks = tasks.filter((task) => {
-    if (filter === "active") return !task.completed;
-    if (filter === "completed") return task.completed;
-    return true;
-  });
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -90,201 +79,116 @@ const Tasks = () => {
     return dueDate < today;
   };
 
+  const columns = [
+    { key: "todo", label: "To-Do" },
+    { key: "inprogress", label: "In Progress" },
+    { key: "inreview", label: "In Review" },
+    { key: "done", label: "Done" },
+  ];
+
+  const columnBgColors: Record<string, string> = {
+    todo: "bg-sky-100",
+    inprogress: "bg-amber-100",
+    inreview: "bg-violet-100",
+    done: "bg-green-100",
+  };
+
   return (
     <div className="relative min-h-screen bg-[#F8F8FF]">
       <Sidebar />
-
-      {/* Main content area - offset by sidebar width */}
       <div className="ml-64">
         <Navbar />
-
-        {/* Main content area */}
         <div className="p-6 pb-24">
-          {/* Header */}
-          <div className="flex items-center justify-between mb-6">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900">Tasks</h1>
-              <p className="text-gray-600 mt-1">
-                Manage your tasks and stay productive
-              </p>
-            </div>
-            <button className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors flex items-center gap-2">
-              <svg
-                width="20"
-                height="20"
-                fill="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path d="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z" />
-              </svg>
-              Add Task
-            </button>
+          {/* Heading outside columns */}
+          <div className="flex items-end gap-4 mb-8">
+            <h1 className="mb-2 text-4xl font-normal tracking-tight text-gray-800">
+              Tasks
+            </h1>
           </div>
-
-          {/* Filter Tabs */}
-          <div className="flex gap-1 mb-6 bg-gray-100 rounded-lg p-1 w-fit">
-            {(["all", "active", "completed"] as const).map((filterType) => (
-              <button
-                key={filterType}
-                onClick={() => setFilter(filterType)}
-                className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
-                  filter === filterType
-                    ? "bg-white text-gray-900 shadow-sm"
-                    : "text-gray-600 hover:text-gray-900"
-                }`}
-              >
-                {filterType.charAt(0).toUpperCase() + filterType.slice(1)}
-                <span className="ml-2 text-xs text-gray-500">
-                  (
-                  {filterType === "all"
-                    ? tasks.length
-                    : filterType === "active"
-                    ? tasks.filter((t) => !t.completed).length
-                    : tasks.filter((t) => t.completed).length}
-                  )
-                </span>
-              </button>
-            ))}
-          </div>
-
-          {/* Tasks List */}
-          <div className="space-y-4">
-            {filteredTasks.map((task) => (
+          {/* Column Labels Row */}
+          <div className="grid grid-cols-1 gap-4 mb-2 md:grid-cols-2 lg:grid-cols-4">
+            {columns.map((col) => (
               <div
-                key={task.id}
-                className={`bg-white rounded-lg border border-gray-200 p-6 transition-all hover:shadow-sm ${
-                  task.completed ? "opacity-75" : ""
-                }`}
+                key={col.key}
+                className="text-xl font-semibold text-center text-gray-700"
               >
-                <div className="flex items-start gap-4">
-                  <button
-                    onClick={() => toggleTask(task.id)}
-                    className={`flex-shrink-0 w-5 h-5 rounded border-2 mt-1 transition-all ${
-                      task.completed
-                        ? "bg-green-500 border-green-500 text-white"
-                        : "border-gray-300 hover:border-green-400"
-                    }`}
-                  >
-                    {task.completed && (
-                      <svg
-                        width="12"
-                        height="12"
-                        fill="currentColor"
-                        viewBox="0 0 24 24"
-                        className="w-full h-full"
-                      >
-                        <path d="M21,7L9,19L3.5,13.5L4.91,12.09L9,16.17L19.59,5.59L21,7Z" />
-                      </svg>
-                    )}
-                  </button>
-
-                  <div className="flex-1">
-                    <div className="flex items-center gap-3 mb-2">
-                      <h3
-                        className={`text-lg font-semibold ${
-                          task.completed
-                            ? "line-through text-gray-500"
-                            : "text-gray-900"
-                        }`}
-                      >
-                        {task.title}
-                      </h3>
-                      <span
-                        className={`px-2 py-1 text-xs font-medium rounded-full border ${getPriorityColor(
-                          task.priority
-                        )}`}
-                      >
-                        {task.priority}
-                      </span>
-                    </div>
-
-                    <p
-                      className={`text-gray-600 mb-3 ${
-                        task.completed ? "line-through" : ""
-                      }`}
-                    >
-                      {task.description}
-                    </p>
-
-                    <div className="flex items-center gap-4 text-sm">
-                      <div className="flex items-center gap-1 text-gray-500">
-                        <svg
-                          width="16"
-                          height="16"
-                          fill="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path d="M19,19H5V8H19M16,1V3H8V1H6V3H5C3.89,3 3,3.89 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V5C21,3.89 20.1,3 19,3H18V1M17,12H12V17H17V12Z" />
-                        </svg>
-                        <span
-                          className={
-                            isOverdue(task.dueDate) && !task.completed
-                              ? "text-red-600 font-medium"
-                              : ""
-                          }
-                        >
-                          Due {formatDate(task.dueDate)}
-                          {isOverdue(task.dueDate) && !task.completed && (
-                            <span className="ml-1 text-red-600">(Overdue)</span>
-                          )}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-2">
-                    <button className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">
-                      <svg
-                        width="16"
-                        height="16"
-                        fill="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path d="M20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18,2.9 17.35,2.9 16.96,3.29L15.12,5.12L18.87,8.87M3,17.25V21H6.75L17.81,9.93L14.06,6.18L3,17.25Z" />
-                      </svg>
-                    </button>
-                    <button className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors">
-                      <svg
-                        width="16"
-                        height="16"
-                        fill="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path d="M19,4H15.5L14.5,3H9.5L8.5,4H5V6H19M6,19A2,2 0 0,0 8,21H16A2,2 0 0,0 18,19V7H6V19Z" />
-                      </svg>
-                    </button>
-                  </div>
-                </div>
+                {col.label}
               </div>
             ))}
           </div>
-
-          {filteredTasks.length === 0 && (
-            <div className="text-center py-12">
-              <svg
-                width="64"
-                height="64"
-                fill="currentColor"
-                viewBox="0 0 24 24"
-                className="mx-auto mb-4 text-gray-400"
-              >
-                <path d="M19,3H5C3.89,3 3,3.89 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V5C21,3.89 20.1,3 19,3M19,19H5V5H19V19Z" />
-                <path d="M7,7H17V9H7V7M7,11H17V13H7V11M7,15H13V17H7V15Z" />
-              </svg>
-              <h3 className="text-lg font-medium text-gray-900 mb-1">
-                No tasks found
-              </h3>
-              <p className="text-gray-500">
-                {filter === "active" && "No active tasks. Great job!"}
-                {filter === "completed" && "No completed tasks yet."}
-                {filter === "all" && "Get started by creating your first task."}
-              </p>
-            </div>
-          )}
+          {/* Kanban Columns */}
+          <div className="relative grid grid-cols-1 gap-4 mt-0 md:grid-cols-2 lg:grid-cols-4">
+            {columns.map((col, idx) => (
+              <>
+                <div
+                  key={col.key}
+                  className={`${
+                    columnBgColors[col.key]
+                  } rounded-2xl p-4 min-h-[400px] flex flex-col shadow-md`}
+                >
+                  {/* Removed label from inside column */}
+                  <div className="flex-1 space-y-4">
+                    {tasks.filter((task) => task.status === col.key).length ===
+                    0 ? (
+                      <div className="mt-8 text-center text-gray-400">
+                        No tasks
+                      </div>
+                    ) : (
+                      tasks
+                        .filter((task) => task.status === col.key)
+                        .map((task) => (
+                          <div
+                            key={task.id}
+                            className="p-4 bg-white border border-gray-200 shadow-sm rounded-2xl"
+                          >
+                            <div className="flex items-center gap-2 mb-2">
+                              <span
+                                className={`px-2 py-1 text-xs font-medium rounded-full border ${getPriorityColor(
+                                  task.priority
+                                )}`}
+                              >
+                                {task.priority}
+                              </span>
+                              <span className="ml-auto text-xs text-gray-400">
+                                {formatDate(task.dueDate)}
+                              </span>
+                            </div>
+                            <h3 className="mb-1 text-lg font-semibold text-gray-800">
+                              {task.title}
+                            </h3>
+                            <p className="mb-2 text-sm text-gray-600">
+                              {task.description}
+                            </p>
+                            {isOverdue(task.dueDate) && !task.completed && (
+                              <span className="text-xs font-medium text-red-600">
+                                Overdue
+                              </span>
+                            )}
+                          </div>
+                        ))
+                    )}
+                  </div>
+                </div>
+                {/* Vertical dashed divider except after last column */}
+                {idx < columns.length - 1 && (
+                  <div
+                    className="absolute top-0 bottom-0 hidden lg:block"
+                    style={{
+                      left: `calc(${
+                        ((idx + 1) / columns.length) * 100
+                      }% - 0.5px)`,
+                      width: "0",
+                      zIndex: 10,
+                    }}
+                  >
+                    <div className="h-full border-l-2 border-gray-300 border-dashed"></div>
+                  </div>
+                )}
+              </>
+            ))}
+          </div>
         </div>
       </div>
-
-      {/* Bottom Navigation */}
       <BottomNavbar />
     </div>
   );
