@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Navbar, Sidebar, BottomNavbar } from "../components";
+import { useSidebar } from "../hooks/useSidebar";
 import { Card, CardContent, CardHeader } from "../components/ui/card";
 import { Button } from "../components/ui/button";
 import { Badge } from "../components/ui/badge";
@@ -20,6 +21,7 @@ import {
 } from "lucide-react";
 
 const Calendar = () => {
+  const { sidebarWidth } = useSidebar();
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [isEventDialogOpen, setIsEventDialogOpen] = useState(false);
@@ -151,7 +153,10 @@ const Calendar = () => {
       <Sidebar />
 
       {/* Main content area - offset by sidebar width */}
-      <div className="ml-64">
+      <div
+        className="transition-all duration-300"
+        style={{ marginLeft: sidebarWidth }}
+      >
         <Navbar />
 
         {/* Main content area */}

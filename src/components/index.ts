@@ -10,6 +10,9 @@ export { default as UserDropdown } from "./ui/UserDropdown";
 // Common Components
 export { default as ImageCarousel } from "./common/ImageCarousel";
 
+// Modal Components
+export { default as NoteModal } from "./modals/NoteModal";
+
 // Shadcn UI Components
 export { Button } from "./ui/button";
 export { Input } from "./ui/input";
@@ -34,6 +37,7 @@ export {
 
 // Feature Components
 export { default as NoteGrid } from "./features/NoteGrid";
+export { default as FolderGrid } from "./features/FolderGrid";
 
 // Settings Modal (keeping existing path for now)
 export { default as SettingsModal } from "./SettingsModal/SettingsModal";

@@ -1,25 +1,68 @@
 import { useState } from "react";
 import { FiGrid, FiList, FiPlus, FiFilter } from "react-icons/fi";
-import { Navbar, Sidebar, BottomNavbar, NoteGrid } from "../components";
+import {
+  Navbar,
+  Sidebar,
+  BottomNavbar,
+  NoteGrid,
+  FolderGrid,
+  NoteModal,
+} from "../components";
+import { useSidebar } from "../hooks/useSidebar";
 
 const Notes = () => {
   const [view, setView] = useState<"grid" | "card">("grid");
+  const [isNoteModalOpen, setIsNoteModalOpen] = useState(false);
+  const { sidebarWidth } = useSidebar();
 
   return (
     <div className="relative min-h-screen bg-[#F8F8FF]">
       <Sidebar />
 
       {/* Main content area - offset by sidebar width */}
-      <div className="ml-64">
+      <div
+        className="transition-all duration-300"
+        style={{ marginLeft: sidebarWidth }}
+      >
         <Navbar />
 
         {/* Main content area */}
         <div className="p-6 pb-24">
-          {/* Header */}
+          {/* Header with Stats in Same Row */}
           <div className="flex items-center justify-between mb-8">
-            <h1 className="mb-2 text-4xl font-normal tracking-tight text-gray-800">
+            <h1 className="text-4xl font-normal tracking-tight text-gray-800">
               Notes
             </h1>
+
+            {/* Statistics Summary - Centered */}
+            {/**
+            <div className="absolute flex items-center justify-center gap-8 transform -translate-x-1/2 left-1/2">
+              <div className="flex flex-col items-center justify-center gap-1">
+                <span className="text-sm font-normal text-center text-gray-500">
+                  Notes Created
+                </span>
+                <span className="text-3xl font-bold text-center text-gray-900">
+                  42
+                </span>
+              </div>
+              <div className="flex flex-col items-center justify-center gap-1">
+                <span className="text-sm font-normal text-center text-gray-500">
+                  Folders Created
+                </span>
+                <span className="text-3xl font-bold text-center text-gray-900">
+                  6
+                </span>
+              </div>
+              <div className="flex flex-col items-center justify-center gap-1">
+                <span className="text-sm font-normal text-center text-gray-500">
+                  Tasks Linked
+                </span>
+                <span className="text-3xl font-bold text-center text-gray-900">
+                  18
+                </span>
+              </div>
+            </div>
+            */}
 
             {/* Toggle Buttons (Neumorphic - Pill Icon Only) */}
             <div className="flex items-center gap-4">
@@ -63,22 +106,38 @@ const Notes = () => {
             </div>
           </div>
 
-          {/* Notes Grid */}
-          <NoteGrid view={view} />
+          {/* Folders Section */}
+          <div className="mb-8">
+            <h2 className="mb-4 text-2xl font-semibold text-gray-800">
+              Folders
+            </h2>
+            <FolderGrid view={view} />
+          </div>
+
+          {/* Notes Section */}
+          <div>
+            <h2 className="mb-4 text-2xl font-semibold text-gray-800">
+              All Notes
+            </h2>
+            <NoteGrid view={view} />
+          </div>
         </div>
       </div>
 
       {/* Floating Action Button */}
       <button
-        className="fixed z-40 flex items-center justify-center text-white transition-all duration-300 rounded-full shadow-lg bottom-20 right-6 w-14 h-14 bg-gradient-to-r from-blue-500 to-purple-600 hover:shadow-xl hover:scale-110"
-        onClick={() => {
-          // Handle add note logic here
-          console.log("Add new note");
-        }}
+        className="fixed z-40 flex items-center justify-center text-white transition-all duration-300 bg-black rounded-full shadow-lg bottom-20 right-6 w-14 h-14 hover:shadow-xl hover:scale-110"
+        onClick={() => setIsNoteModalOpen(true)}
         aria-label="Add new note"
       >
         <FiPlus size={24} />
       </button>
+
+      {/* Note Modal */}
+      <NoteModal
+        isOpen={isNoteModalOpen}
+        onClose={() => setIsNoteModalOpen(false)}
+      />
 
       <BottomNavbar />
     </div>

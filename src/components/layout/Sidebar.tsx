@@ -1,7 +1,54 @@
-import { useState } from "react";
+import { useSidebar } from "../../hooks/useSidebar";
+import { useState, useCallback, useEffect } from "react";
 
 const Sidebar = () => {
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const { isCollapsed, setIsCollapsed, customWidth, setCustomWidth } =
+    useSidebar();
+  const [isResizing, setIsResizing] = useState(false);
+
+  // Add cursor style to body when resizing
+  useEffect(() => {
+    if (isResizing) {
+      document.body.style.cursor = "col-resize";
+      document.body.style.userSelect = "none";
+    } else {
+      document.body.style.cursor = "";
+      document.body.style.userSelect = "";
+    }
+
+    return () => {
+      document.body.style.cursor = "";
+      document.body.style.userSelect = "";
+    };
+  }, [isResizing]);
+
+  const handleMouseDown = useCallback(
+    (e: React.MouseEvent) => {
+      if (isCollapsed) return;
+
+      setIsResizing(true);
+      e.preventDefault();
+
+      const startX = e.clientX;
+      const startWidth = customWidth;
+
+      const handleMouseMove = (e: MouseEvent) => {
+        const deltaX = e.clientX - startX;
+        const newWidth = Math.max(200, Math.min(500, startWidth + deltaX)); // Min 200px, Max 500px
+        setCustomWidth(newWidth);
+      };
+
+      const handleMouseUp = () => {
+        setIsResizing(false);
+        document.removeEventListener("mousemove", handleMouseMove);
+        document.removeEventListener("mouseup", handleMouseUp);
+      };
+
+      document.addEventListener("mousemove", handleMouseMove);
+      document.addEventListener("mouseup", handleMouseUp);
+    },
+    [isCollapsed, customWidth, setCustomWidth]
+  );
 
   const menuItems = [
     {
@@ -67,15 +114,19 @@ const Sidebar = () => {
   return (
     <aside
       className={`fixed left-0 top-0 h-full bg-white border-r border-gray-200 transition-all duration-300 z-[1000] ${
-        isCollapsed ? "w-16" : "w-64"
+        isCollapsed ? "w-16" : ""
       }`}
+      style={{
+        width: isCollapsed ? "4rem" : `${customWidth}px`,
+        transition: isResizing ? "none" : "width 300ms ease",
+      }}
     >
       {/* Logo/Brand Section */}
       <div className="flex items-center justify-between p-4 border-b border-gray-200">
         {!isCollapsed && (
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-sm">N</span>
+            <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600">
+              <span className="text-sm font-bold text-white">N</span>
             </div>
             <span className="font-semibold text-gray-800">Nexell</span>
           </div>
@@ -145,21 +196,25 @@ const Sidebar = () => {
         )}
       </nav>
 
-      {/* Bottom Section */}
+      {/* Resize Handle */}
       {!isCollapsed && (
-        <div className="absolute bottom-4 left-4 right-4">
-          <div className="p-3 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg border border-blue-100">
-            <div className="flex items-center gap-2 mb-2">
-              <div className="w-2 h-2 bg-green-400 rounded-full"></div>
-              <span className="text-sm font-medium text-gray-700">
-                Storage Used
-              </span>
+        <div
+          className="absolute top-0 right-0 z-10 w-1 h-full transition-all duration-200 cursor-col-resize hover:bg-blue-400 group"
+          onMouseDown={handleMouseDown}
+        >
+          {/* Hover indicator with grip dots */}
+          <div className="absolute right-0 flex items-center justify-center w-4 h-12 transition-opacity duration-200 transform translate-x-1 -translate-y-1/2 bg-white border border-gray-200 shadow-md opacity-0 top-1/2 rounded-r-md group-hover:opacity-100">
+            <div className="flex flex-col gap-1">
+              <div className="w-1 h-1 bg-gray-400 rounded-full"></div>
+              <div className="w-1 h-1 bg-gray-400 rounded-full"></div>
+              <div className="w-1 h-1 bg-gray-400 rounded-full"></div>
+              <div className="w-1 h-1 bg-gray-400 rounded-full"></div>
+              <div className="w-1 h-1 bg-gray-400 rounded-full"></div>
             </div>
-            <div className="w-full bg-gray-200 rounded-full h-1.5 mb-2">
-              <div className="bg-gradient-to-r from-blue-500 to-purple-500 h-1.5 rounded-full w-3/4"></div>
-            </div>
-            <p className="text-xs text-gray-500">2.4 GB of 5 GB used</p>
           </div>
+
+          {/* Resize line indicator */}
+          <div className="w-0.5 h-full bg-transparent group-hover:bg-blue-400 transition-colors duration-200"></div>
         </div>
       )}
     </aside>
