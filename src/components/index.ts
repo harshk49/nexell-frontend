@@ -9,6 +9,7 @@ export { default as UserDropdown } from "./ui/UserDropdown";
 
 // Common Components
 export { default as ImageCarousel } from "./common/ImageCarousel";
+export { AuthLoading } from "./common/AuthLoading";
 
 // Modal Components
 export { default as NoteModal } from "./modals/NoteModal";

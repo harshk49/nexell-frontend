@@ -1,13 +1,29 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { FaGoogle, FaApple } from "react-icons/fa";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { useAuthContext } from "@/contexts/hooks";
+import { AuthLoading } from "@/components";
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [carouselIndex, setCarouselIndex] = useState(0);
   const navigate = useNavigate();
+  const location = useLocation();
+  const { login, loading, error, isAuthenticated, user } = useAuthContext();
+
+  // Get the intended destination from location state or default to home
+  const from = location.state?.from?.pathname || "/";
+
+  // Redirect if already authenticated
+  React.useEffect(() => {
+    if (isAuthenticated) {
+      navigate(from, { replace: true });
+    }
+  }, [isAuthenticated, navigate, from]);
+
   const togglePassword = () => setShowPassword((prev) => !prev);
 
   const carouselImages = [
@@ -23,19 +39,28 @@ const Login = () => {
     return () => clearInterval(timer);
   }, [carouselImages.length]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
-    setTimeout(() => {
-      navigate("/loading");
-    }, 1000);
+
+    // Basic validation
+    if (!email || !password) {
+      return;
+    }
+
+    try {
+      await login({ email, password });
+      navigate(from, { replace: true }); // Redirect to intended destination
+    } catch (err) {
+      // Error is handled by the auth context
+      console.error("Login failed:", err);
+    }
   };
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center w-screen h-screen bg-black">
-        <h1 className="text-4xl font-bold text-white">Welcome back!</h1>
-      </div>
+      <AuthLoading
+        message={`Welcome Back${user?.name ? `, ${user.name}` : ""}!`}
+      />
     );
   }
 
@@ -53,15 +78,26 @@ const Login = () => {
           </p>
 
           <form className="space-y-6" onSubmit={handleSubmit}>
+            {error && (
+              <div className="p-3 text-sm text-red-600 rounded-lg bg-red-50">
+                {error}
+              </div>
+            )}
             <input
               type="email"
               placeholder="Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
               className="w-full px-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-black placeholder:tracking-wider"
             />
             <div className="relative">
               <input
                 type={showPassword ? "text" : "password"}
                 placeholder="Password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
                 className="w-full px-4 py-3 pr-12 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-black placeholder:tracking-wider"
               />
               <span
@@ -73,9 +109,10 @@ const Login = () => {
             </div>
             <button
               type="submit"
-              className="w-full py-3 text-white transition bg-black rounded-full hover:bg-gray-900"
+              disabled={loading || !email || !password}
+              className="w-full py-3 text-white transition bg-black rounded-full hover:bg-gray-900 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Login
+              {loading ? "Signing in..." : "Login"}
             </button>
           </form>
 

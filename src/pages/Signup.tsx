@@ -1,14 +1,31 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { FaGoogle, FaApple } from "react-icons/fa";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { useAuthContext } from "@/contexts/hooks";
+import { AuthLoading } from "@/components";
 
 const Signup = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [passwordConfirm, setPasswordConfirm] = useState("");
   const [carouselIndex, setCarouselIndex] = useState(0);
   const navigate = useNavigate();
+  const location = useLocation();
+  const { register, loading, error, isAuthenticated, user } = useAuthContext();
+
+  // Get the intended destination from location state or default to home
+  const from = location.state?.from?.pathname || "/";
+
+  // Redirect if already authenticated
+  React.useEffect(() => {
+    if (isAuthenticated) {
+      navigate(from, { replace: true });
+    }
+  }, [isAuthenticated, navigate, from]);
   const togglePassword = () => setShowPassword((prev) => !prev);
   const toggleConfirmPassword = () => setShowConfirmPassword((prev) => !prev);
 
@@ -25,19 +42,40 @@ const Signup = () => {
     return () => clearInterval(timer);
   }, [carouselImages.length]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
-    setTimeout(() => {
-      navigate("/loading");
-    }, 1000);
+
+    // Client-side validation
+    if (password !== passwordConfirm) {
+      return; // Password mismatch will be shown in real-time
+    }
+
+    if (password.length < 6) {
+      return; // Password length will be shown in real-time
+    }
+
+    try {
+      await register({ name, email, password, passwordConfirm });
+      navigate(from, { replace: true }); // Redirect to intended destination
+    } catch (err) {
+      // Error is handled by the auth context
+      console.error("Registration failed:", err);
+    }
   };
+
+  // Password validation helpers
+  const isPasswordValid = password.length >= 6;
+  const doPasswordsMatch = password === passwordConfirm;
+  const showPasswordValidation = password.length > 0;
+  const showConfirmValidation = passwordConfirm.length > 0;
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center w-screen h-screen bg-black">
-        <h1 className="text-4xl font-bold text-white">Hello, User Name</h1>
-      </div>
+      <AuthLoading
+        message={`Hello${
+          user?.name ? `, ${user.name}` : ""
+        }! Creating your account...`}
+      />
     );
   }
 
@@ -55,20 +93,35 @@ const Signup = () => {
           </p>
 
           <form className="space-y-6" onSubmit={handleSubmit}>
+            {error && (
+              <div className="p-3 text-sm text-red-600 rounded-lg bg-red-50">
+                {error}
+              </div>
+            )}
             <input
               type="text"
               placeholder="Name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required
               className="w-full px-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-black placeholder:tracking-wider"
             />
             <input
               type="email"
               placeholder="Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
               className="w-full px-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-black placeholder:tracking-wider"
             />
             <div className="relative">
               <input
                 type={showPassword ? "text" : "password"}
                 placeholder="Password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                minLength={6}
                 className="w-full px-4 py-3 pr-12 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-black placeholder:tracking-wider"
               />
               <span
@@ -78,10 +131,25 @@ const Signup = () => {
                 {showPassword ? <FaEyeSlash /> : <FaEye />}
               </span>
             </div>
+            {showPasswordValidation && (
+              <div className="px-4 text-xs">
+                <p
+                  className={`${
+                    isPasswordValid ? "text-green-600" : "text-red-600"
+                  }`}
+                >
+                  Password must be at least 6 characters long
+                </p>
+              </div>
+            )}
             <div className="relative">
               <input
                 type={showConfirmPassword ? "text" : "password"}
                 placeholder="Confirm Password"
+                value={passwordConfirm}
+                onChange={(e) => setPasswordConfirm(e.target.value)}
+                required
+                minLength={6}
                 className="w-full px-4 py-3 pr-12 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-black placeholder:tracking-wider"
               />
               <span
@@ -91,11 +159,29 @@ const Signup = () => {
                 {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
               </span>
             </div>
+            {showConfirmValidation && (
+              <div className="px-4 text-xs">
+                <p
+                  className={`${
+                    doPasswordsMatch ? "text-green-600" : "text-red-600"
+                  }`}
+                >
+                  Passwords must match
+                </p>
+              </div>
+            )}
             <button
               type="submit"
-              className="w-full py-3 text-white transition bg-black rounded-full hover:bg-gray-900"
+              disabled={
+                loading ||
+                !isPasswordValid ||
+                !doPasswordsMatch ||
+                !name ||
+                !email
+              }
+              className="w-full py-3 text-white transition bg-black rounded-full hover:bg-gray-900 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Sign Up
+              {loading ? "Creating Account..." : "Sign Up"}
             </button>
           </form>
 

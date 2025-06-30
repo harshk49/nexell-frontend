@@ -1,10 +1,13 @@
 import { useRef, useEffect, useState } from "react";
 import type { RefObject } from "react";
 import SearchModal from "../ui/SearchModal";
+import UserDropdown from "../ui/UserDropdown";
 import { useLocation } from "react-router-dom";
+import { useAuthContext } from "@/contexts/hooks";
 
 const Navbar = () => {
   const [modalOpen, setModalOpen] = useState(false);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
   const [shortcutLabel, setShortcutLabel] = useState("Ctrl + /");
   const inputRef = useRef<HTMLInputElement>(null);
   const modalInputRef = useRef<HTMLInputElement>(
@@ -13,6 +16,7 @@ const Navbar = () => {
   const [currentTime, setCurrentTime] = useState("");
   const [currentDate, setCurrentDate] = useState("");
   const location = useLocation();
+  const { user } = useAuthContext();
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -22,10 +26,26 @@ const Navbar = () => {
       }
       if (e.key === "Escape") {
         setModalOpen(false);
+        setDropdownOpen(false);
       }
     };
+
+    const handleClickOutside = (e: MouseEvent) => {
+      const target = e.target as Element;
+      if (
+        !target.closest(".user-dropdown") &&
+        !target.closest(".avatar-button")
+      ) {
+        setDropdownOpen(false);
+      }
+    };
+
     window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
+    document.addEventListener("click", handleClickOutside);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+      document.removeEventListener("click", handleClickOutside);
+    };
   }, []);
 
   useEffect(() => {
@@ -127,12 +147,33 @@ const Navbar = () => {
           </div>
 
           {/* Right: Avatar */}
-          <div className="flex items-center justify-end min-w-[48px]">
-            <img
-              src="/icon.svg"
-              alt="User Avatar"
-              className="object-cover w-12 h-12 bg-white border border-gray-200 rounded-full shadow-sm"
-            />
+          <div className="relative flex items-center justify-end min-w-[48px]">
+            <button
+              className="avatar-button focus:outline-none focus:ring-2 focus:ring-blue-200 rounded-full"
+              onClick={() => setDropdownOpen(!dropdownOpen)}
+            >
+              <div className="relative">
+                {user?.profilePicture?.url ? (
+                  <img
+                    src={user.profilePicture.url}
+                    alt="User Avatar"
+                    className="object-cover w-12 h-12 bg-white border border-gray-200 rounded-full shadow-sm hover:shadow-md transition-shadow"
+                  />
+                ) : (
+                  <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-medium shadow-sm hover:shadow-md transition-shadow">
+                    {user?.name?.charAt(0)?.toUpperCase() || "U"}
+                  </div>
+                )}
+                {/* Online indicator */}
+                <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-400 border-2 border-white rounded-full"></div>
+              </div>
+            </button>
+
+            {dropdownOpen && (
+              <div className="user-dropdown">
+                <UserDropdown onClose={() => setDropdownOpen(false)} />
+              </div>
+            )}
           </div>
         </div>
       </nav>
