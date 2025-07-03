@@ -2,6 +2,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { FiGrid, FiCalendar, FiFileText, FiCheckSquare } from "react-icons/fi";
 import { useEffect, useRef, useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { createPortal } from "react-dom";
 
 const BottomNavbar = () => {
   const location = useLocation();
@@ -82,17 +83,24 @@ const BottomNavbar = () => {
     };
   }, [showNavbar]);
 
-  return (
+  return createPortal(
     <AnimatePresence mode="wait">
       {visible && (
         <motion.div
-          className="fixed left-0 right-0 z-50 bottom-4"
+          className="fixed inset-x-0 bottom-4 z-[9999] pointer-events-none"
           initial={shouldAnimate ? "hidden" : undefined}
           animate="visible"
           exit="hidden"
           variants={variants}
+          style={{
+            position: "fixed",
+            bottom: "1rem",
+            left: 0,
+            right: 0,
+            zIndex: 9999,
+          }}
         >
-          <div className="flex items-center justify-center max-w-md px-4 py-2 mx-auto">
+          <div className="flex items-center justify-center max-w-md px-4 py-2 mx-auto pointer-events-auto">
             <div className="flex items-center gap-2 p-2 backdrop-blur-md bg-white/70 dark:bg-zinc-800/70 border border-gray-200 dark:border-zinc-700 rounded-full shadow-[0_4px_12px_rgba(0,0,0,0.1)]">
               {navItems.map((item) => (
                 <button
@@ -115,7 +123,8 @@ const BottomNavbar = () => {
           </div>
         </motion.div>
       )}
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body
   );
 };
 

@@ -25,6 +25,7 @@ const Calendar = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [isEventDialogOpen, setIsEventDialogOpen] = useState(false);
+  const [isDateEventsDialogOpen, setIsDateEventsDialogOpen] = useState(false);
 
   // Sample events data - you can replace this with your actual data
   const events = [
@@ -142,6 +143,7 @@ const Calendar = () => {
       day
     );
     setSelectedDate(newSelectedDate);
+    setIsDateEventsDialogOpen(true);
   };
 
   const selectedDateEvents = selectedDate
@@ -187,10 +189,10 @@ const Calendar = () => {
           </div>
 
           {/* Calendar Card */}
-          <Card className="border-0 shadow-xl bg-white/70 backdrop-blur-sm">
-            <CardHeader className="pb-4">
+          <Card className="bg-white border border-gray-200 shadow-sm">
+            <CardHeader className="pb-4 border-b border-gray-100">
               <div className="flex items-center justify-between">
-                <h2 className="text-2xl font-normal text-gray-800">
+                <h2 className="text-2xl font-semibold text-black">
                   {monthNames[currentDate.getMonth()]}{" "}
                   {currentDate.getFullYear()}
                 </h2>
@@ -200,7 +202,7 @@ const Calendar = () => {
                     variant="outline"
                     size="sm"
                     onClick={() => navigateMonth("prev")}
-                    className="p-0 transition-all duration-200 border-gray-200 h-9 w-9 hover:border-gray-300 hover:bg-gray-50"
+                    className="p-0 transition-all duration-200 border-gray-300 h-9 w-9 hover:border-black hover:bg-black hover:text-white"
                   >
                     <ChevronLeft className="w-4 h-4" />
                   </Button>
@@ -209,7 +211,7 @@ const Calendar = () => {
                     variant="outline"
                     size="sm"
                     onClick={() => setCurrentDate(new Date())}
-                    className="px-3 transition-all duration-200 border-gray-200 hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700"
+                    className="px-3 transition-all duration-200 border-gray-300 hover:border-black hover:bg-black hover:text-white"
                   >
                     Today
                   </Button>
@@ -218,7 +220,7 @@ const Calendar = () => {
                     variant="outline"
                     size="sm"
                     onClick={() => navigateMonth("next")}
-                    className="p-0 transition-all duration-200 border-gray-200 h-9 w-9 hover:border-gray-300 hover:bg-gray-50"
+                    className="p-0 transition-all duration-200 border-gray-300 h-9 w-9 hover:border-black hover:bg-black hover:text-white"
                   >
                     <ChevronRight className="w-4 h-4" />
                   </Button>
@@ -232,7 +234,7 @@ const Calendar = () => {
                 {dayNames.map((day) => (
                   <div
                     key={day}
-                    className="py-3 text-sm font-semibold tracking-wide text-center text-gray-500 uppercase"
+                    className="py-3 text-sm font-semibold tracking-wide text-center text-gray-600 uppercase"
                   >
                     {day}
                   </div>
@@ -248,22 +250,20 @@ const Calendar = () => {
                     <div
                       key={index}
                       className={`
-                        relative min-h-[80px] p-2 rounded-xl cursor-pointer transition-all duration-200 group
+                        relative min-h-[80px] p-2 rounded-lg cursor-pointer transition-all duration-200
                         ${
                           day === null
                             ? "cursor-default"
-                            : "hover:bg-gray-50 hover:shadow-md"
+                            : "hover:bg-gray-50 hover:shadow-md border border-gray-100"
                         }
                         ${
                           day && isToday(day)
-                            ? "bg-gradient-to-br from-blue-500 to-indigo-600 text-white shadow-lg transform hover:scale-105"
+                            ? "bg-black text-white shadow-lg"
                             : ""
                         }
                         ${
                           day && isSelected(day) && !isToday(day)
-                            ? "bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-blue-200 shadow-md"
-                            : day
-                            ? "border border-gray-100"
+                            ? "bg-gray-100 border-2 border-black"
                             : ""
                         }
                       `}
@@ -306,7 +306,7 @@ const Calendar = () => {
                             <div className="absolute top-1 right-1">
                               <div
                                 className={`w-2 h-2 rounded-full ${
-                                  isToday(day) ? "bg-white" : "bg-blue-500"
+                                  isToday(day) ? "bg-white" : "bg-red-500"
                                 }`}
                               />
                             </div>
@@ -320,71 +320,74 @@ const Calendar = () => {
             </CardContent>
           </Card>
 
-          {/* Selected Date Events */}
-          {selectedDate && (
-            <Card className="border-0 shadow-xl bg-white/70 backdrop-blur-sm">
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h3 className="text-xl font-semibold text-gray-800">
-                      {selectedDate.toLocaleDateString("en-US", {
-                        weekday: "long",
-                        year: "numeric",
-                        month: "long",
-                        day: "numeric",
-                      })}
-                    </h3>
-                    <p className="mt-1 text-gray-500">
-                      {selectedDateEvents.length} event
-                      {selectedDateEvents.length !== 1 ? "s" : ""} scheduled
-                    </p>
-                  </div>
-
+          {/* Selected Date Events Dialog */}
+          <Dialog
+            open={isDateEventsDialogOpen}
+            onOpenChange={setIsDateEventsDialogOpen}
+          >
+            <DialogContent className="text-black bg-white border-2 border-black sm:max-w-2xl">
+              <DialogHeader className="pb-4 border-b-2 border-black">
+                <DialogTitle className="text-2xl font-bold text-black">
+                  {selectedDate?.toLocaleDateString("en-US", {
+                    weekday: "long",
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                  })}
+                </DialogTitle>
+                <div className="flex items-center justify-between mt-2">
+                  <p className="text-gray-600">
+                    {selectedDateEvents.length} event
+                    {selectedDateEvents.length !== 1 ? "s" : ""} scheduled
+                  </p>
                   <Badge
                     variant="secondary"
-                    className="text-blue-700 bg-blue-100 hover:bg-blue-200"
+                    className="font-medium text-white bg-red-500 border-0 hover:bg-red-600"
                   >
                     <CalendarIcon className="w-3 h-3 mr-1" />
                     {selectedDateEvents.length}
                   </Badge>
                 </div>
-              </CardHeader>
+              </DialogHeader>
 
-              <CardContent>
+              <div className="overflow-y-auto max-h-96">
                 {selectedDateEvents.length > 0 ? (
-                  <div className="space-y-3">
-                    {selectedDateEvents.map((event) => (
+                  <div className="mt-4 space-y-4">
+                    {selectedDateEvents.map((event, index) => (
                       <div
                         key={event.id}
-                        className="p-4 transition-all duration-200 border border-gray-100 rounded-lg bg-gradient-to-r from-gray-50 to-white hover:shadow-md group"
+                        className="p-4 transition-all duration-300 border-2 border-gray-200 rounded-lg bg-gray-50 hover:border-black"
                       >
                         <div className="flex items-start justify-between">
                           <div className="flex-1">
-                            <div className="flex items-center gap-3 mb-2">
+                            <div className="flex items-center gap-3 mb-3">
+                              <div className="flex items-center justify-center w-8 h-8 text-sm font-bold text-white bg-black rounded-full">
+                                {index + 1}
+                              </div>
                               <div
-                                className={`w-3 h-3 rounded-full ${event.color}`}
+                                className={`w-4 h-4 rounded-full ${event.color} border-2 border-white`}
                               />
-                              <h4 className="font-semibold text-gray-800 group-hover:text-gray-900">
+                              <h4 className="text-lg font-semibold text-black">
                                 {event.title}
                               </h4>
                             </div>
 
-                            <div className="flex items-center gap-4 text-sm text-gray-500">
-                              <div className="flex items-center gap-1">
+                            <div className="flex items-center gap-6 text-sm">
+                              <div className="flex items-center gap-2 px-3 py-1 font-medium text-white bg-orange-500 rounded-full">
                                 <Clock className="w-4 h-4" />
-                                {event.time}
+                                <span>{event.time}</span>
                               </div>
-                              <div className="flex items-center gap-1">
+                              <div className="flex items-center gap-2 px-3 py-1 font-medium text-white bg-blue-500 rounded-full">
                                 <Users className="w-4 h-4" />
-                                {event.participants} participants
+                                <span>{event.participants} participants</span>
                               </div>
                             </div>
                           </div>
 
                           <Button
-                            variant="ghost"
+                            variant="outline"
                             size="sm"
-                            className="transition-opacity duration-200 opacity-0 group-hover:opacity-100"
+                            className="font-medium text-black border-black hover:bg-black hover:text-white"
                           >
                             Edit
                           </Button>
@@ -394,27 +397,27 @@ const Calendar = () => {
                   </div>
                 ) : (
                   <div className="py-12 text-center">
-                    <div className="flex items-center justify-center w-24 h-24 mx-auto mb-4 rounded-full bg-gradient-to-br from-gray-100 to-gray-200">
+                    <div className="flex items-center justify-center w-24 h-24 mx-auto mb-4 bg-gray-100 border-2 border-gray-300 rounded-full">
                       <CalendarIcon className="w-10 h-10 text-gray-400" />
                     </div>
-                    <h4 className="mb-2 text-lg font-semibold text-gray-600">
+                    <h4 className="mb-2 text-xl font-semibold text-black">
                       No events scheduled
                     </h4>
-                    <p className="mb-6 text-gray-500">
+                    <p className="mb-6 text-gray-600">
                       Start planning your day by adding an event
                     </p>
                     <Button
                       onClick={() => setIsEventDialogOpen(true)}
-                      className="text-white transition-all duration-200 shadow-lg bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 hover:shadow-xl"
+                      className="px-6 py-2 font-medium text-white transition-all duration-300 bg-black rounded-lg hover:bg-gray-800"
                     >
                       <Plus className="w-4 h-4 mr-2" />
                       Add Event
                     </Button>
                   </div>
                 )}
-              </CardContent>
-            </Card>
-          )}
+              </div>
+            </DialogContent>
+          </Dialog>
         </div>
       </div>
 
