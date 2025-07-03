@@ -15,7 +15,8 @@ const Signup = () => {
   const [carouselIndex, setCarouselIndex] = useState(0);
   const navigate = useNavigate();
   const location = useLocation();
-  const { register, loading, error, isAuthenticated, user } = useAuthContext();
+  const { register, loading, error, isAuthenticated, loadingUser } =
+    useAuthContext();
 
   // Get the intended destination from location state or default to home
   const from = location.state?.from?.pathname || "/";
@@ -73,14 +74,14 @@ const Signup = () => {
     return (
       <AuthLoading
         message={`Hello${
-          user?.name ? `, ${user.name}` : ""
+          loadingUser?.name || name ? `, ${loadingUser?.name || name}` : ""
         }! Creating your account...`}
       />
     );
   }
 
   return (
-    <div className="flex h-screen overflow-hidden">
+    <div className="flex h-screen overflow-hidden bg-gradient-to-br from-blue-50/90 via-white/70 to-purple-50/90 backdrop-blur-2xl">
       {/* Left side - Signup Form */}
       <div className="flex flex-col items-center justify-between w-1/2 h-screen px-10 py-8">
         <div className="flex flex-col justify-center flex-grow w-full max-w-md gap-8">

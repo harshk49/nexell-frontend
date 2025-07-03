@@ -15,6 +15,7 @@ export interface AuthContextType {
   user: User | null;
   loading: boolean;
   error: string | null;
+  loadingUser: User | null;
   isAuthenticated: boolean;
   login: (credentials: LoginData) => Promise<void>;
   register: (userData: RegisterData) => Promise<void>;

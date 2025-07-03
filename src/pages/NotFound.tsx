@@ -10,7 +10,7 @@ const NotFound = () => {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-[#F8F8FF]">
+    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-gray-50/90 via-white/70 to-slate-50/90 backdrop-blur-2xl">
       <div className="p-8 text-center">
         <div className="flex justify-center mb-6">
           <img

@@ -244,7 +244,7 @@ const Tasks = () => {
       onDragEnd={handleDragEnd}
       collisionDetection={closestCenter}
     >
-      <div className="relative min-h-screen bg-[#F8F8FF]">
+      <div className="relative min-h-screen bg-gradient-to-br from-purple-50/90 via-white/70 to-pink-50/90 backdrop-blur-2xl">
         <Sidebar />
         <div
           className="transition-all duration-300"

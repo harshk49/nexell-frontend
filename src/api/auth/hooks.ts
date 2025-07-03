@@ -7,6 +7,7 @@ export const useAuth = () => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [loadingUser, setLoadingUser] = useState<User | null>(null);
 
   // Initialize auth state
   useEffect(() => {
@@ -37,12 +38,15 @@ export const useAuth = () => {
     try {
       setLoading(true);
       setError(null);
+      setLoadingUser(null);
 
       const loggedInUser = await authService.login(credentials);
+      setLoadingUser(loggedInUser); // Set loading user immediately
       setUser(loggedInUser);
     } catch (err) {
       const errorMessage = errorHandlers.getErrorMessage(err);
       setError(errorMessage);
+      setLoadingUser(null);
       throw err;
     } finally {
       setLoading(false);
@@ -55,12 +59,15 @@ export const useAuth = () => {
       try {
         setLoading(true);
         setError(null);
+        setLoadingUser(null);
 
         const newUser = await authService.register(userData);
+        setLoadingUser(newUser); // Set loading user immediately
         setUser(newUser);
       } catch (err) {
         const errorMessage = errorHandlers.getErrorMessage(err);
         setError(errorMessage);
+        setLoadingUser(null);
         throw err;
       } finally {
         setLoading(false);
@@ -147,6 +154,7 @@ export const useAuth = () => {
     user,
     loading,
     error,
+    loadingUser,
     isAuthenticated: !!user,
     login,
     register,

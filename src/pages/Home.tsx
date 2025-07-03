@@ -10,7 +10,7 @@ const Home = () => {
   const formattedDate = `${month} ${day}`;
 
   return (
-    <div className="min-h-screen bg-[#F8F8FF]">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50/80 via-white/60 to-purple-50/80 backdrop-blur-xl">
       {/* Navbar */}
       <Navbar />
 

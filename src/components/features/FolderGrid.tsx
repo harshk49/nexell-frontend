@@ -1,5 +1,5 @@
 import React from "react";
-import { FiFolder, FiMoreVertical } from "react-icons/fi";
+import { FiMoreVertical } from "react-icons/fi";
 
 // Dummy data for demonstration
 const folders = [
@@ -61,36 +61,58 @@ const FolderGrid: React.FC<FolderGridProps> = ({ view }) => {
             className="relative p-0 transition-all duration-200 bg-transparent border-none shadow-none cursor-pointer group hover:scale-105"
             style={{ minHeight: 160 }}
           >
-            {/* Apple-style Folder Icon */}
+            {/* Modern Folder Icon - Similar to attached image */}
             <div className="flex flex-col items-center justify-center w-full h-full">
-              <div className="relative h-20 mb-3 w-28">
-                {/* Back tab */}
+              <div className="relative w-24 h-20 mb-3">
+                {/* Background folder layer */}
                 <div
-                  className="absolute top-0 left-0 w-16 h-6 rounded-tl-2xl rounded-tr-xl"
+                  className="absolute w-20 h-16 rounded-lg shadow-lg top-2 left-2"
                   style={{
-                    background: `linear-gradient(180deg, ${folder.color} 80%, #e0f2fe 100%)`,
-                    boxShadow: `0 2px 8px 0 ${folder.color}33`,
-                    zIndex: 1,
+                    background:
+                      "linear-gradient(135deg, #6495ed 0%, #4169e1 100%)",
+                    opacity: 0.7,
                   }}
                 />
-                {/* Main body */}
+                {/* Middle folder layer */}
                 <div
-                  className="absolute left-0 h-16 border border-blue-100 top-3 w-28 rounded-2xl"
+                  className="absolute w-20 h-16 rounded-lg shadow-lg top-1 left-1"
                   style={{
-                    background: `linear-gradient(180deg, ${folder.color} 80%, #e0f2fe 100%)`,
-                    boxShadow: `0 4px 16px 0 ${folder.color}22`,
-                    zIndex: 2,
+                    background:
+                      "linear-gradient(135deg, #5b8def 0%, #4876e8 100%)",
+                    opacity: 0.85,
                   }}
                 />
+                {/* Front folder layer */}
+                <div
+                  className="absolute top-0 left-0 w-20 h-16 rounded-lg shadow-xl"
+                  style={{
+                    background:
+                      "linear-gradient(135deg, #4a90e2 0%, #357abd 100%)",
+                  }}
+                >
+                  {/* Folder tab */}
+                  <div
+                    className="absolute w-8 h-3 rounded-t-md -top-3 left-2"
+                    style={{
+                      background:
+                        "linear-gradient(135deg, #4a90e2 0%, #357abd 100%)",
+                    }}
+                  />
+                  {/* White paper/document inside folder */}
+                  <div className="absolute w-16 h-12 bg-white rounded shadow-inner top-2 left-2 opacity-90">
+                    <div className="w-12 h-1 mt-2 ml-2 bg-gray-200 rounded"></div>
+                    <div className="w-10 h-1 mt-1 ml-2 bg-gray-200 rounded"></div>
+                    <div className="h-1 mt-1 ml-2 bg-gray-200 rounded w-14"></div>
+                  </div>
+                </div>
               </div>
               {/* Folder Name */}
-              <h3 className="w-24 mb-1 text-lg font-semibold text-center text-gray-800 truncate">
+              <h3 className="w-20 mb-1 text-sm font-medium text-center text-gray-800 truncate">
                 {folder.name}
               </h3>
-              {/* Note Count and Date */}
-              <div className="flex items-center justify-between w-24 text-xs text-gray-500">
-                <span>{folder.noteCount} notes</span>
-                <span>{new Date(folder.createdAt).toLocaleDateString()}</span>
+              {/* Note Count */}
+              <div className="text-xs text-gray-500">
+                {folder.noteCount} notes
               </div>
             </div>
             {/* More button */}
@@ -112,14 +134,24 @@ const FolderGrid: React.FC<FolderGridProps> = ({ view }) => {
           className="flex items-center justify-between p-4 transition-all duration-200 bg-white border border-gray-100 rounded-lg shadow-sm cursor-pointer group hover:shadow-md"
         >
           <div className="flex items-center gap-4">
-            <div
-              className="p-2 rounded-lg shadow-sm"
-              style={{
-                backgroundColor: `${folder.color}15`,
-                color: folder.color,
-              }}
-            >
-              <FiFolder size={20} />
+            {/* Modern folder icon for card view */}
+            <div className="relative w-10 h-8">
+              <div
+                className="absolute top-0 left-0 w-10 h-8 rounded shadow-lg"
+                style={{
+                  background:
+                    "linear-gradient(135deg, #4a90e2 0%, #357abd 100%)",
+                }}
+              >
+                {/* Folder tab */}
+                <div
+                  className="absolute w-4 h-2 rounded-t -top-2 left-1"
+                  style={{
+                    background:
+                      "linear-gradient(135deg, #4a90e2 0%, #357abd 100%)",
+                  }}
+                />
+              </div>
             </div>
             <div>
               <h3 className="text-base font-semibold text-gray-800">

@@ -149,7 +149,7 @@ const Calendar = () => {
     : [];
 
   return (
-    <div className="relative min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+    <div className="relative min-h-screen bg-gradient-to-br from-indigo-50/90 via-white/70 to-cyan-50/90 backdrop-blur-2xl">
       <Sidebar />
 
       {/* Main content area - offset by sidebar width */}

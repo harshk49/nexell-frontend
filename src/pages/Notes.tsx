@@ -10,13 +10,36 @@ import {
 } from "../components";
 import { useSidebar } from "../hooks/useSidebar";
 
+interface Note {
+  id: number;
+  title: string;
+  description: string;
+  createdAt: string;
+}
+
 const Notes = () => {
   const [view, setView] = useState<"grid" | "card">("grid");
   const [isNoteModalOpen, setIsNoteModalOpen] = useState(false);
+  const [selectedNote, setSelectedNote] = useState<Note | null>(null);
   const { sidebarWidth } = useSidebar();
 
+  const handleNoteClick = (note: Note) => {
+    setSelectedNote(note);
+    setIsNoteModalOpen(true);
+  };
+
+  const handleNewNote = () => {
+    setSelectedNote(null);
+    setIsNoteModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsNoteModalOpen(false);
+    setSelectedNote(null);
+  };
+
   return (
-    <div className="relative min-h-screen bg-[#F8F8FF]">
+    <div className="relative min-h-screen bg-gradient-to-br from-slate-50/90 via-white/70 to-blue-50/90 backdrop-blur-2xl">
       <Sidebar />
 
       {/* Main content area - offset by sidebar width */}
@@ -119,7 +142,7 @@ const Notes = () => {
             <h2 className="mb-4 text-2xl font-semibold text-gray-800">
               All Notes
             </h2>
-            <NoteGrid view={view} />
+            <NoteGrid view={view} onNoteClick={handleNoteClick} />
           </div>
         </div>
       </div>
@@ -127,7 +150,7 @@ const Notes = () => {
       {/* Floating Action Button */}
       <button
         className="fixed z-40 flex items-center justify-center text-white transition-all duration-300 bg-black rounded-full shadow-lg bottom-20 right-6 w-14 h-14 hover:shadow-xl hover:scale-110"
-        onClick={() => setIsNoteModalOpen(true)}
+        onClick={handleNewNote}
         aria-label="Add new note"
       >
         <FiPlus size={24} />
@@ -136,7 +159,8 @@ const Notes = () => {
       {/* Note Modal */}
       <NoteModal
         isOpen={isNoteModalOpen}
-        onClose={() => setIsNoteModalOpen(false)}
+        onClose={handleCloseModal}
+        note={selectedNote}
       />
 
       <BottomNavbar />

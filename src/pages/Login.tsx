@@ -12,7 +12,8 @@ const Login = () => {
   const [carouselIndex, setCarouselIndex] = useState(0);
   const navigate = useNavigate();
   const location = useLocation();
-  const { login, loading, error, isAuthenticated, user } = useAuthContext();
+  const { login, loading, error, isAuthenticated, loadingUser } =
+    useAuthContext();
 
   // Get the intended destination from location state or default to home
   const from = location.state?.from?.pathname || "/";
@@ -48,6 +49,7 @@ const Login = () => {
     }
 
     try {
+      // Call the login function from auth context
       await login({ email, password });
       navigate(from, { replace: true }); // Redirect to intended destination
     } catch (err) {
@@ -59,13 +61,15 @@ const Login = () => {
   if (loading) {
     return (
       <AuthLoading
-        message={`Welcome Back${user?.name ? `, ${user.name}` : ""}!`}
+        message={`Welcome Back${
+          loadingUser?.name ? `, ${loadingUser.name}` : ""
+        }!`}
       />
     );
   }
 
   return (
-    <div className="flex h-screen overflow-hidden">
+    <div className="flex h-screen overflow-hidden bg-gradient-to-br from-blue-50/90 via-white/70 to-purple-50/90 backdrop-blur-2xl">
       {/* Left side - Login Form */}
       <div className="flex flex-col items-center justify-between w-1/2 h-screen px-10 py-8">
         <div className="flex flex-col justify-center flex-grow w-full max-w-md gap-8">

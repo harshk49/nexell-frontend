@@ -20,9 +20,11 @@ export const AuthLoading: React.FC<AuthLoadingProps> = ({
   return (
     <div className="flex items-center justify-center w-screen h-screen bg-black">
       <div className="text-center">
-        <h1 className="text-4xl font-bold text-white mb-4">{displayMessage}</h1>
+        <h1 className="mb-4 text-4xl font-normal text-white">
+          {displayMessage}
+        </h1>
         <div className="flex justify-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
+          <div className="w-8 h-8 border-b-2 border-white rounded-full animate-spin"></div>
         </div>
       </div>
     </div>

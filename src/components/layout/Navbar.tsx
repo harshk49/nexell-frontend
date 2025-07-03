@@ -121,27 +121,28 @@ const Navbar = () => {
               <input
                 ref={inputRef}
                 type="text"
-                placeholder="What would you like to find today?"
-                className="w-full py-3 pl-12 text-base text-gray-700 placeholder-gray-400 transition-all duration-200 border border-gray-200 cursor-pointer pr-28 bg-white/70 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-200 hover:shadow-lg"
-                style={{ backdropFilter: "blur(8px)" }}
+                placeholder="Search..."
+                className="w-full h-12 pl-12 pr-24 text-base text-gray-900 placeholder-gray-500 transition-all duration-200 bg-white border-2 shadow-sm rounded-2xl border-gray-200/60 focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-200 hover:border-blue-300"
               />
               <span className="absolute text-gray-400 -translate-y-1/2 left-4 top-1/2">
                 <svg
-                  width="20"
-                  height="20"
+                  width="18"
+                  height="18"
                   fill="none"
                   stroke="currentColor"
                   strokeWidth="2"
                   viewBox="0 0 24 24"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
                 >
-                  <circle cx="11" cy="11" r="7" />
-                  <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                  <circle cx="11" cy="11" r="8" />
+                  <path d="M21 21l-4.35-4.35" />
                 </svg>
               </span>
-              <span className="absolute flex items-center gap-1 text-gray-400 -translate-y-1/2 select-none right-4 top-1/2">
-                <span className="flex items-center gap-0.5 bg-gray-100 border border-gray-200 rounded px-1.5 py-0.5 text-xs font-mono shadow-sm">
+              <span className="absolute flex items-center -translate-y-1/2 select-none right-4 top-1/2">
+                <kbd className="inline-flex items-center px-2.5 py-1.5 text-sm font-medium text-gray-500 border border-gray-200 rounded shadow-sm bg-gray-50">
                   {shortcutLabel}
-                </span>
+                </kbd>
               </span>
             </div>
           </div>
@@ -149,7 +150,7 @@ const Navbar = () => {
           {/* Right: Avatar */}
           <div className="relative flex items-center justify-end min-w-[48px]">
             <button
-              className="avatar-button focus:outline-none focus:ring-2 focus:ring-blue-200 rounded-full"
+              className="rounded-full avatar-button focus:outline-none focus:ring-2 focus:ring-blue-200"
               onClick={() => setDropdownOpen(!dropdownOpen)}
             >
               <div className="relative">
@@ -157,15 +158,20 @@ const Navbar = () => {
                   <img
                     src={user.profilePicture.url}
                     alt="User Avatar"
-                    className="object-cover w-12 h-12 bg-white border border-gray-200 rounded-full shadow-sm hover:shadow-md transition-shadow"
+                    className="object-cover w-12 h-12 transition-shadow bg-white border border-gray-200 rounded-full shadow-sm hover:shadow-md"
                   />
                 ) : (
-                  <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-medium shadow-sm hover:shadow-md transition-shadow">
-                    {user?.name?.charAt(0)?.toUpperCase() || "U"}
+                  <div className="flex items-center justify-center w-12 h-12 font-normal text-white transition-all duration-300 rounded-full shadow-lg bg-gradient-to-br from-slate-700 via-slate-800 to-slate-900 hover:shadow-xl hover:scale-105 hover:from-slate-600 hover:via-slate-700 hover:to-slate-800">
+                    {user?.name
+                      ? user.name
+                          .split(" ")
+                          .map((name) => name.charAt(0))
+                          .join("")
+                          .toUpperCase()
+                          .slice(0, 2)
+                      : "U"}
                   </div>
                 )}
-                {/* Online indicator */}
-                <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-400 border-2 border-white rounded-full"></div>
               </div>
             </button>
 
